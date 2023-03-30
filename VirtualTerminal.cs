@@ -4,31 +4,27 @@ using System.Diagnostics;
 namespace week_1_assesment
 {
 
-    public struct Chocolate
-    {
-        public int count;
-        public string color;
-    }
     class VendingMachine
     {
-        private Stack<Chocolate> dispenser;
+        private Stack<string> dispenser;
         public VendingMachine()
         {
-            this.dispenser = new Stack<Chocolate>();
+            this.dispenser = new Stack<string>();
         }
 
         public void AddChocolates(string color, int count)
         {
-            Chocolate chocolate = new Chocolate();
-            chocolate.color = color;
-            chocolate.count = count;
-            dispenser.Push(chocolate);
+            for(int i=0; i<count; i++)
+            {
+                dispenser.Push(color);
+            }
+           
         }
 
-        public Chocolate[] RemoveChocolates(int count)
+        public string[] RemoveChocolates(int count)
         {
-            Chocolate container = new Chocolate();
-            Chocolate[] package = new Chocolate[count];
+            string container;
+            string[] package = new string[count];
             for (int itr=0; itr<count; itr++)
             {
                 if(this.dispenser.TryPeek(out container))
@@ -43,10 +39,10 @@ namespace week_1_assesment
             return package;
         }
 
-        public Chocolate[] DispenseChocolates(int count)
+        public string[] DispenseChocolates(int count)
         {
-            Chocolate container = new Chocolate();
-            Chocolate[] package = new Chocolate[count];
+            string container;
+            string[] package = new string[count];
             this.dispenser.Reverse();
             for (int itr = 0; itr < count; itr++)
             {
@@ -63,17 +59,24 @@ namespace week_1_assesment
             return package;
         }
 
-        public Chocolate[] DispenseChocolatesOfSameColor(string color)
+        public string[] DispenseChocolatesOfSameColor(string color)
         {
-            Chocolate container = new Chocolate();
-            List<Chocolate>package = new List<Chocolate>();
-            for (int itr = 0; itr <this.dispenser.Count(); itr++)
+            
+            string container;
+            List<string>package = new List<string>();
+            List<string> tempBox = new List<string>();
+            int count = this.dispenser.Count();
+            for (int itr = 0; itr <count; itr++)
             {
                 if (this.dispenser.TryPeek(out container))
                 {
-                    if(container.color == color)
+                    if (container == color)
                     {
-                        package[itr] = (this.dispenser.Pop());
+                        package.Add(this.dispenser.Pop());
+                    }
+                    else
+                    {
+                        tempBox.Add(this.dispenser.Pop());
                     } 
                 }
                 else
@@ -81,21 +84,23 @@ namespace week_1_assesment
                     throw new Exception("Dispenser is Empty");
                 }
             }
+            tempBox.Reverse();
+            tempBox.ForEach((chocolate) => this.dispenser.Push(chocolate));
             return package.ToArray();
         }
 
         public int[] NoOfChocolates()
         {
             int[] count = new int[] { 0, 0, 0, 0, 0, 0, 0 };
-            Chocolate[] chocolates = this.dispenser.ToArray();
+            string[] chocolates = this.dispenser.ToArray();
             for (int itr = 0; itr < chocolates.Length; itr++)
             {
-                if (chocolates[itr].color == "green") count[0]+= chocolates[itr].count;
-                else if (chocolates[itr].color == "silver") count[1] += chocolates[itr].count;
-                else if (chocolates[itr].color == "blue") count[2] += chocolates[itr].count;
-                else if (chocolates[itr].color == "crimson") count[3] += chocolates[itr].count;
-                else if (chocolates[itr].color == "purple") count[4] += chocolates[itr].count;
-                else if (chocolates[itr].color == "red") count[5] += chocolates[itr].count;
+                if (chocolates[itr] == "green") count[0]+= 1;
+                else if (chocolates[itr] == "silver") count[1] += 1;
+                else if (chocolates[itr] == "blue") count[2] += 1;
+                else if (chocolates[itr] == "crimson") count[3] +=1;
+                else if (chocolates[itr] == "purple") count[4] += 1;
+                else if (chocolates[itr] == "red") count[5] += 1;
                 else count[6]++;
             }
             return count;
@@ -104,37 +109,51 @@ namespace week_1_assesment
 
         public void ChangeChocolateColor(int count, string colorToChange, string changeColor)
         {
-            Chocolate container = new Chocolate();
+            string container;
             int changeColorCount = 0;
-            for (int itr = 0; itr < this.dispenser.Count; itr++)
+            int dispencerCount = this.dispenser.Count();
+            for (int itr = 0; itr < dispencerCount; itr++)
             {
                 if (changeColorCount == count) break;
                 if (this.dispenser.TryPeek(out container))
                 {
-                    if (container.color == colorToChange)
+                   
+                    if (container == colorToChange)
                     {
-                        container.color = changeColor;
-                        changeColorCount += container.count;
+                        
+                        changeColorCount += 1;
                         this.dispenser.Pop();
-                        this.dispenser.Push(container);
                     }
 
                 }
             }
+          
+            for(int i=0; i< count; i++)
+            {
+                this.dispenser.Push(changeColor);
+            }
+           
         }
 
-        public Chocolate RemoveChocolateOfColor(string color)
+        public string RemoveChocolateOfColor(string color)
         {
-            Chocolate chocolate = new Chocolate();
-            Chocolate container;
-            while (this.dispenser.Count > 0)
+            string chocolate = "";
+            string container;
+            int count = this.dispenser.Count();
+            List<string> tempBox = new List<string>();
+            for(int itr=0; itr<count; itr++)
             {
                 if (this.dispenser.TryPeek(out container))
                 {
-                    if(container.color == color)
+                  
+                    if(container == color)
                     {
-                        this.dispenser.Pop();
+                        chocolate = this.dispenser.Pop();
                         break;
+                    }
+                    else
+                    {
+                        tempBox.Add(this.dispenser.Pop());
                     }
                 }
                 else
@@ -142,6 +161,8 @@ namespace week_1_assesment
                     break;
                 }
             }
+            tempBox.Reverse();
+            tempBox.ForEach((chocolate) => this.dispenser.Push(chocolate));
             return chocolate;
         }
     }
@@ -159,12 +180,30 @@ namespace week_1_assesment
             {
                 Console.WriteLine(count);
             }
-            Chocolate[] redChocolates = machine.DispenseChocolatesOfSameColor("red");
-            foreach (Chocolate chocolate in redChocolates)
+            string[] redChocolates = machine.DispenseChocolatesOfSameColor("red");
+            Console.WriteLine("Red Chocolates "+ redChocolates.Length);
+            machine.RemoveChocolates(2);
+            machine.DispenseChocolates(2);
+            int[] totalChocolatesAfter = machine.NoOfChocolates();
+            foreach (int count in totalChocolatesAfter)
             {
-                Console.WriteLine(chocolate.color);
+                Console.WriteLine(count);
             }
-            
+            machine.ChangeChocolateColor(2, "blue", "red");
+            Console.WriteLine("Blue Chocolate of Count 2 Changed to Red");
+            int[] totalChocolatesAfterColorChange = machine.NoOfChocolates();
+            foreach (int count in totalChocolatesAfterColorChange)
+            {
+                Console.WriteLine(count);
+            }
+            machine.RemoveChocolateOfColor("blue");
+            Console.WriteLine("Blue Chocolate Removed");
+            int[] totalChocolatesAfterBlueRemoved = machine.NoOfChocolates();
+            foreach (int count in totalChocolatesAfterBlueRemoved)
+            {
+                Console.WriteLine(count);
+            }
+
         }
     }
 }
